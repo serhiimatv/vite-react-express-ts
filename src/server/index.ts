@@ -1,6 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
-import Task from "./models/Task.ts";
+import Task from "./models/task";
 
 const DB_URL = "mongodb+srv://user:user@cluster0.spttqut.mongodb.net/";
 
@@ -28,6 +28,17 @@ if (!process.env["VITE"]) {
 }
 
 app.get("/api/test", (_, res) => res.json({ greeting: "Foo off bar" }));
+
+app.get("/api/task", async (_, res) => {
+  try {
+    const response = await Task.find();
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(501);
+  }
+});
 
 app.post("/api/task", async (req, res) => {
   const { title } = req.body;

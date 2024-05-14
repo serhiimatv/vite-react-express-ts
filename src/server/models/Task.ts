@@ -5,4 +5,4 @@ const Task = new mongoose.Schema({
   completed: { type: Boolean, default: false },
 });
 
-export default mongoose.model("Task", Task);
+export default mongoose.models["Task"] ?? mongoose.model("Task", Task);
