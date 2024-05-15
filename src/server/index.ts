@@ -1,8 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
-import Task from "./models/task";
+import taskRouter from "./models/task-router";
 
-const DB_URL = "mongodb+srv://user:user@cluster0.spttqut.mongodb.net/";
+const DB_URL = import.meta.env.VITE_DB_URL;
 
 export const app = express();
 
@@ -16,6 +16,8 @@ async function startDB() {
 startDB();
 app.use(express.json());
 
+app.use("/api", taskRouter);
+
 if (!process.env["VITE"]) {
   const frontendFiles = process.cwd() + "/dist";
   app.use(express.static(frontendFiles));
@@ -26,53 +28,3 @@ if (!process.env["VITE"]) {
     console.log(`Start express on port ${process.env["PORT"]}`)
   );
 }
-
-app.get("/api/test", (_, res) => res.json({ greeting: "Foo off bar" }));
-
-app.get("/api/task", async (_, res) => {
-  try {
-    const response = await Task.find();
-
-    return res.status(200).json(response);
-  } catch (error) {
-    console.log(error);
-    return res.status(501).json(error);
-  }
-});
-
-app.post("/api/task", async (req, res) => {
-  const { title } = req.body;
-
-  try {
-    const task = await Task.create({ title });
-    return res.json(task);
-  } catch (error) {
-    console.log(error);
-    return res.status(501).json(error);
-  }
-});
-
-app.delete("/api/task/:id", async (req, res) => {
-  try {
-    const task = await Task.deleteOne({ _id: req.params.id });
-
-    return res.status(200).json(task);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json(error);
-  }
-});
-
-app.patch("/api/task", async (req, res) => {
-  try {
-    const task = await Task.findOneAndUpdate(
-      { _id: req.body._id },
-      { completed: !req.body.completed },
-      { new: true }
-    );
-    return res.status(200).json(task);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json(error);
-  }
-});
