@@ -36,7 +36,7 @@ app.get("/api/task", async (_, res) => {
     return res.status(200).json(response);
   } catch (error) {
     console.log(error);
-    return res.status(501);
+    return res.status(501).json(error);
   }
 });
 
@@ -48,5 +48,31 @@ app.post("/api/task", async (req, res) => {
     return res.json(task);
   } catch (error) {
     console.log(error);
+    return res.status(501).json(error);
+  }
+});
+
+app.delete("/api/task/:id", async (req, res) => {
+  try {
+    const task = await Task.deleteOne({ _id: req.params.id });
+
+    return res.status(200).json(task);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+});
+
+app.patch("/api/task", async (req, res) => {
+  try {
+    const task = await Task.findOneAndUpdate(
+      { _id: req.body._id },
+      { completed: !req.body.completed },
+      { new: true }
+    );
+    return res.status(200).json(task);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
   }
 });
